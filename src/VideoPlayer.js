@@ -3,7 +3,7 @@ import videojs from 'video.js';
 // The actual plugin function is exported by this module, but it is also
 // attached to the `Player.prototype`; so, there is no need to assign it
 // to a variable.
-//import 'videojs-offset';
+import 'videojs-offset';
 
 export default class VideoPlayer extends React.Component {
   componentDidMount() {
@@ -41,8 +41,13 @@ export default class VideoPlayer extends React.Component {
     this.player.src({type: type, src: location});
   }
 
-  pause(){
-      this.player.pause();
+  tooglePlay(){
+      if(this.player.paused()){
+        this.player.play();
+      }
+      else{
+        this.player.pause();
+      }
   }
 
   // wrap the player in a div with a `data-vjs-player` attribute

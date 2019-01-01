@@ -6,6 +6,7 @@ import { VideoFile } from './model/VideoFile';
 import { Sequence } from './model/Sequence';
 import Tags from 'react-material-tags';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import hotkeys from 'hotkeys-js';
 /*
  * action types
  */
@@ -48,7 +49,6 @@ class App extends Component {
   }
 
   updateFileListFromServer(){
-
     var self = this;
     apiFetchFiles().then(result => {
       let filesToProcess = []
@@ -57,6 +57,7 @@ class App extends Component {
       })
       self.setState({"filesToProcess":filesToProcess});
     });
+    this.initHotKeys();
   }
 
   updateFileListState(newFileList){
@@ -86,6 +87,34 @@ class App extends Component {
     this.videoPlayer.setSrc(file.location, file.type);
   }
 
+  initHotKeys(){
+    let self = this;
+    hotkeys('up', function(event, handler){ 
+      event.preventDefault() 
+      self.markOutPoint("out");
+    });
+    hotkeys('down', function(event, handler){ 
+      event.preventDefault() 
+      self.markInPoint("in");
+    });
+    hotkeys('left', function(event, handler){ 
+      event.preventDefault() 
+      self.videoPlayer.seek(-0.5);
+    });
+    hotkeys('right', function(event, handler){ 
+      event.preventDefault() 
+      self.videoPlayer.seek(0.5);
+    });
+    hotkeys('space', function(event, handler){ 
+      event.preventDefault() 
+      self.videoPlayer.tooglePlay();
+    });
+    hotkeys('enter', function(event, handler){ 
+      event.preventDefault() 
+      self.saveSequence();
+    });
+  }
+
   render() {
     return (
       <MuiThemeProvider>
@@ -108,7 +137,7 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.markInPoint("in")}>arrow_downward</i>
           <i class="material-icons" onClick={(e) => this.markOutPoint("out")}>arrow_upward</i>
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(-1)}>skip_previous</i>
-          <i class="material-icons" onClick={(e) => this.videoPlayer.pause()}>pause</i>
+          <i class="material-icons" onClick={(e) => this.videoPlayer.tooglePlay()}>pause</i>
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
