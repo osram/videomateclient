@@ -10,6 +10,7 @@
     "react-dom": "^16.2.0",
     "react-material-tags": "^1.0.1",
     "react-scripts": "1.0.17",
+    "react-tag-input": "^6.1.0",
     "video.js": "^6.4.0"
   },
   "scripts": {

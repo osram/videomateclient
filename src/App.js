@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import logo from './yoda.jpg';
 import './App.css';
 import VideoPlayer from './VideoPlayer.js'
+import TagEditor from './TagEditor.js'
 import { VideoFile } from './model/VideoFile';
 import { Sequence } from './model/Sequence';
-import Tags from 'react-material-tags';
+//import Tags from 'react-material-tags';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import hotkeys from 'hotkeys-js';
 
@@ -15,6 +16,7 @@ import hotkeys from 'hotkeys-js';
 import {
   apiFetchFiles
 } from './services/fileapi';
+
 
 const sourceTags=[
   {label:"America"},
@@ -154,6 +156,7 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
+         <TagEditor></TagEditor>
         </div>
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.location}</h2>  
