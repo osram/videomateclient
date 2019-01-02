@@ -18,16 +18,17 @@ import {
 } from './services/fileapi';
 
 
-const sourceTags=[
-  {label:"America"},
-  {label:"Europe"},
-  {label:"Africa"},
-  {label:"Asia"},
-  {label:"Australia"}
+const tags = [
+  { id: "Thailand", text: "Thailand" },
+  { id: "India", text: "India" }
 ];
-
-const defTags=[
-  {label:"America"}
+const suggestions= [
+  { id: 'USA', text: 'USA' },
+  { id: 'Germany', text: 'Germany' },
+  { id: 'Austria', text: 'Austria' },
+  { id: 'Costa Rica', text: 'Costa Rica' },
+  { id: 'Sri Lanka', text: 'Sri Lanka' },
+  { id: 'Thailand', text: 'Thailand' }
 ];
 
 const videoJsOptions = {
@@ -68,21 +69,24 @@ class App extends Component {
   }
 
   markInPoint() { 
-    this.state.currentSequence.inPoint = this.videoPlayer.getCurrentTime();
+    var copy = this.state.currentSequence;
+    copy.inPoint = this.videoPlayer.getCurrentTime();
+    this.setState({currentSequence:copy});
     console.log("setting in point at:" + this.state.currentSequence.inPoint);
   }
 
   markOutPoint() { 
-    this.state.currentSequence.outPoint = this.videoPlayer.getCurrentTime();
+    var copy = this.state.currentSequence;
+    copy.outPoint = this.videoPlayer.getCurrentTime();
+    this.setState({currentSequence:copy});
     console.log("setting out point at:" + this.state.currentSequence.outPoint);
   }
 
-  saveSequence(){
-    console.log("Saving:" + JSON.stringify(this.state.currentSequence));
-    var copy = this.state.currentFile;
-    copy.addSequence(this.state.currentSequence);
-    this.setState({currentFile: copy, currentSequence: new Sequence()})
-    console.log("Saving:" + JSON.stringify(copy));
+  addNewSequence(){
+    let copy = this.state.currentFile;
+    let sequence = new Sequence();
+    copy.addSequence(sequence);
+    this.setState({currentFile: copy, currentSequence: sequence});
   }
 
   setCurrentSequence(sequence){
@@ -90,6 +94,7 @@ class App extends Component {
     if(sequence.inPoint){
       this.videoPlayer.setCurrentTime(sequence.inPoint);
     }
+    console.log(this.state.currentSequence);
   }
 
   setCurrentFile(file){
@@ -97,36 +102,52 @@ class App extends Component {
     this.videoPlayer.setSrc(file.location, file.type);
   }
 
+  addTagToCurrentSequence(tag){
+    var copy = this.state.currentSequence;
+    copy.tags = [...this.state.currentSequence.tags, tag];
+    this.setState({currentSequence: copy});
+  }
+
+  removeTagFromCurrentSequence(idx){
+    const { tags } = this.state.currentSequence;
+    this.setState({
+     currentSequence: {tags: tags.filter((tag, index) => index !== idx),}});
+  }
+
   initHotKeys(){
     let self = this;
     hotkeys('up', function(event, handler){ 
-      event.preventDefault() 
+      event.preventDefault();
       self.markOutPoint("out");
     });
     hotkeys('down', function(event, handler){ 
-      event.preventDefault() 
+      event.preventDefault();
       self.markInPoint("in");
     });
     hotkeys('left', function(event, handler){ 
-      event.preventDefault() 
+      event.preventDefault();
       self.videoPlayer.seek(-0.5);
     });
     hotkeys('right', function(event, handler){ 
-      event.preventDefault() 
+      event.preventDefault();
       self.videoPlayer.seek(0.5);
     });
     hotkeys('space', function(event, handler){ 
-      event.preventDefault() 
+      event.preventDefault();
       self.videoPlayer.tooglePlay();
     });
-    hotkeys('enter', function(event, handler){ 
-      event.preventDefault() 
+    /*hotkeys('enter', function(event, handler){ 
+      event.preventDefault();
       self.saveSequence();
     });
-
+*/
     hotkeys('ctrl+space', function(event, handler){ 
-      event.preventDefault() 
+      event.preventDefault();
       self.videoPlayer.playSequence(self.state.currentSequence);
+    });
+    hotkeys('enter', function(event, handler){ 
+      event.preventDefault();
+      self.addNewSequence();
     });
   }
 
@@ -156,12 +177,12 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
-         <TagEditor></TagEditor>
+         <TagEditor tags={this.state.currentSequence.tags} suggestions={suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
         </div>
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.location}</h2>  
           <div className="itemBar sequencesBelongingToFile">
-            {this.state.currentFile.sequences.map((sequence, i) =>
+            {[...this.state.currentFile.sequences.values()].map((sequence, i) =>
               <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}><span>{sequence.inPoint.toFixed(2)} - {sequence.outPoint.toFixed(2)}</span></div>
             )}
           </div>

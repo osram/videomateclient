@@ -4,7 +4,7 @@ export class VideoFile{
     location = "";
     type = "";
     framerate = 30;
-    sequences = [];
+    sequences = new Map();
 
     constructor(location, type){
         this.location = location;
@@ -12,7 +12,8 @@ export class VideoFile{
     }
 
     addSequence(sequence){
-        this.sequences.push(sequence)
+        this.sequences.set(sequence.id, sequence);
+        console.log(this);
     }
 
     toString(){

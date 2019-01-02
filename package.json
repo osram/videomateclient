@@ -11,6 +11,7 @@
     "react-material-tags": "^1.0.1",
     "react-scripts": "1.0.17",
     "react-tag-input": "^6.1.0",
+    "uuid": "^3.3.2",
     "video.js": "^6.4.0"
   },
   "scripts": {

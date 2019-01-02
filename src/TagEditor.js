@@ -14,34 +14,11 @@ export default class TagEditor extends React.Component {
     constructor(props) {
         super(props);
  
-        this.state = {
-            tags: [
-                { id: "Thailand", text: "Thailand" },
-                { id: "India", text: "India" }
-             ],
-            suggestions: [
-                { id: 'USA', text: 'USA' },
-                { id: 'Germany', text: 'Germany' },
-                { id: 'Austria', text: 'Austria' },
-                { id: 'Costa Rica', text: 'Costa Rica' },
-                { id: 'Sri Lanka', text: 'Sri Lanka' },
-                { id: 'Thailand', text: 'Thailand' }
-             ]
-        };
-        this.handleDelete = this.handleDelete.bind(this);
-        this.handleAddition = this.handleAddition.bind(this);
+       /* this.state = {
+          */
+        this.handleDelete = this.props.removeTag.bind(this);
+        
         this.handleDrag = this.handleDrag.bind(this);
-    }
- 
-    handleDelete(i) {
-        const { tags } = this.state;
-        this.setState({
-         tags: tags.filter((tag, index) => index !== i),
-        });
-    }
- 
-    handleAddition(tag) {
-        this.setState(state => ({ tags: [...state.tags, tag] }));
     }
  
     handleDrag(tag, currPos, newPos) {
@@ -56,13 +33,13 @@ export default class TagEditor extends React.Component {
     }
  
     render() {
-        const { tags, suggestions } = this.state;
+        const { tags, suggestions } = this.props;
         return (
             <div>
                 <ReactTags tags={tags}
                     suggestions={suggestions}
                     handleDelete={this.handleDelete}
-                    handleAddition={this.handleAddition}
+                    handleAddition={this.props.addTag}
                     handleDrag={this.handleDrag}
                     delimiters={delimiters} />
             </div>
