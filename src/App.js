@@ -7,6 +7,7 @@ import { Sequence } from './model/Sequence';
 import Tags from 'react-material-tags';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import hotkeys from 'hotkeys-js';
+
 /*
  * action types
  */
@@ -28,7 +29,7 @@ const defTags=[
 ];
 
 const videoJsOptions = {
-  autoplay: true,
+  autoplay: false,
   controls: true,
   sources: [{
     src: './DJI_0839.mp4',
@@ -82,6 +83,13 @@ class App extends Component {
     console.log("Saving:" + JSON.stringify(copy));
   }
 
+  setCurrentSequence(sequence){
+    this.setState({currentSequence: sequence});
+    if(sequence.inPoint){
+      this.videoPlayer.setCurrentTime(sequence.inPoint);
+    }
+  }
+
   setCurrentFile(file){
     this.setState({currentFile: file});
     this.videoPlayer.setSrc(file.location, file.type);
@@ -112,6 +120,11 @@ class App extends Component {
     hotkeys('enter', function(event, handler){ 
       event.preventDefault() 
       self.saveSequence();
+    });
+
+    hotkeys('ctrl+space', function(event, handler){ 
+      event.preventDefault() 
+      self.videoPlayer.playSequence(self.state.currentSequence);
     });
   }
 

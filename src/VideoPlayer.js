@@ -1,24 +1,30 @@
 import React from 'react';
 import videojs from 'video.js';
-// The actual plugin function is exported by this module, but it is also
-// attached to the `Player.prototype`; so, there is no need to assign it
-// to a variable.
-import 'videojs-offset';
+
+//create a static reference for onPlayerTimeUpdate
+let _VideoPlayer = null;
+
+const onPlayerTimeUpdate = function (){
+  if(_VideoPlayer.state.playingSequence && _VideoPlayer.getCurrentTime() >= _VideoPlayer.state.sequence.outPoint){
+    _VideoPlayer.player.pause();
+    _VideoPlayer.setState({sequence: null, playingSequence: false});
+  }
+  console.log(_VideoPlayer.getCurrentTime());
+}
 
 export default class VideoPlayer extends React.Component {
+  state = {
+    sequence: null,
+    playingSequence: false
+  }
+  
   componentDidMount() {
-        // instantiate Video.js
-        this.player = videojs(this.videoNode, this.props, function onPlayerReady() {
-        console.log('onPlayerReady', this)
-        });
-        /*
-        this.player.offset({
-            start: 10,
-            end: 15,
-            restart_beginning: false //Should the video go to the beginning when it ends
-        });
-        */
-    }
+      _VideoPlayer = this;
+      this.player = videojs(this.videoNode, this.props, () => {
+        this.player.on('timeupdate', onPlayerTimeUpdate);
+        console.log('onPlayerReady')
+      });
+  }
 
   // destroy player on unmount
   componentWillUnmount() {
@@ -28,12 +34,15 @@ export default class VideoPlayer extends React.Component {
   }
 
   getCurrentTime(){
-      return this.player.currentTime();
+    return this.player.currentTime();
+  }
+
+  setCurrentTime(time){
+    this.player.currentTime(time);
   }
 
   seek(change){
       let currentTime = this.player.currentTime();
-      
       this.player.currentTime(currentTime + change);
   }
 
@@ -42,12 +51,20 @@ export default class VideoPlayer extends React.Component {
   }
 
   tooglePlay(){
+         
       if(this.player.paused()){
         this.player.play();
       }
       else{
         this.player.pause();
       }
+  }
+
+  playSequence(sequence){
+    console.log("Playing sequence " + sequence.inPoint + " - " + sequence.outPoint);
+    this.setState({sequence:sequence, playingSequence: true});
+    this.player.currentTime(sequence.inPoint);
+    this.player.play();
   }
 
   // wrap the player in a div with a `data-vjs-player` attribute
