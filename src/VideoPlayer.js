@@ -48,8 +48,17 @@ export default class VideoPlayer extends React.Component {
   }
 
   setSrc(location, type){
-    this.player.children()[0].setAttribute('crossOrigin','anonymous');
+    this.player.children()[0].setAttribute('crossOrigin','anonymous'); // allow cors to be used, needed to do screendumps
     this.player.src({type: type, src: location});
+  }
+
+  captureFrame(){
+    var video = document.getElementById('vjs_video_3_html5_api');   //TODO: whe should not need to do it like this as we are inside videoplayer
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    var dataURL = canvas.toDataURL();
+    return dataURL;
   }
 
   tooglePlay(){

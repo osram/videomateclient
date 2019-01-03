@@ -67,10 +67,11 @@ class App extends Component {
 
   markInPoint() { 
     var copy = this.state.currentSequence;
+    copy.thumbNailImageUrl = this.videoPlayer.captureFrame();
     copy.inPoint = this.videoPlayer.getCurrentTime();
     this.setState({currentSequence:copy});
     console.log("setting in point at:" + this.state.currentSequence.inPoint);
-    this.captureFrame();
+    console.log(this.state.currentSequence);
   }
 
   markOutPoint() { 
@@ -78,22 +79,6 @@ class App extends Component {
     copy.outPoint = this.videoPlayer.getCurrentTime();
     this.setState({currentSequence:copy});
     console.log("setting out point at:" + this.state.currentSequence.outPoint);
-  }
-
-  captureFrame(){
-    var video = document.getElementById('vjs_video_3_html5_api');   
-    var canvas = document.createElement('canvas');
-    var context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-   //var data  = context.getImageData(10, 10, 50, 50); 
-    var dataURL = canvas.toDataURL();
-
-        //create img
-        var img = document.createElement('img');
-        img.setAttribute('src', dataURL);
-
-        //append img in container div
-        document.getElementById('root').appendChild(img);
   }
 
   addNewSequence(){
@@ -197,7 +182,10 @@ class App extends Component {
           <h2>Sequences beloning to {this.state.currentFile.location}</h2>  
           <div className="itemBar sequencesBelongingToFile">
             {[...this.state.currentFile.sequences.values()].map((sequence, i) =>
-              <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}><span>{sequence.inPoint.toFixed(2)} - {sequence.outPoint.toFixed(2)}</span></div>
+              <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}>
+                <img src={this.state.currentSequence.thumbNailImageUrl} />
+                <span>{sequence.inPoint.toFixed(2)} - {sequence.outPoint.toFixed(2)}</span>
+              </div>
             )}
           </div>
         </div>
