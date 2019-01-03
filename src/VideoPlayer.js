@@ -21,6 +21,7 @@ export default class VideoPlayer extends React.Component {
   componentDidMount() {
       _VideoPlayer = this;
       this.player = videojs(this.videoNode, this.props, () => {
+       // 
         this.player.on('timeupdate', onPlayerTimeUpdate);
         console.log('onPlayerReady')
       });
@@ -47,6 +48,7 @@ export default class VideoPlayer extends React.Component {
   }
 
   setSrc(location, type){
+    this.player.children()[0].setAttribute('crossOrigin','anonymous');
     this.player.src({type: type, src: location});
   }
 

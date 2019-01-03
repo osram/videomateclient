@@ -44,10 +44,7 @@ const videoJsOptions = {
 class App extends Component {
   videoPlayer = null;
   state = {
-      filesToProcess : [
-        new VideoFile("http://192.168.137.151:81/videostorage/DJI_0465-small2.MP4", 'video/mp4'),
-        new VideoFile("./DJI_0456.MP4", 'video/mp4'),
-      ],
+      filesToProcess : [],
       currentSequence: new Sequence(),
       currentFile: new VideoFile()
   }
@@ -73,6 +70,7 @@ class App extends Component {
     copy.inPoint = this.videoPlayer.getCurrentTime();
     this.setState({currentSequence:copy});
     console.log("setting in point at:" + this.state.currentSequence.inPoint);
+    this.captureFrame();
   }
 
   markOutPoint() { 
@@ -80,6 +78,22 @@ class App extends Component {
     copy.outPoint = this.videoPlayer.getCurrentTime();
     this.setState({currentSequence:copy});
     console.log("setting out point at:" + this.state.currentSequence.outPoint);
+  }
+
+  captureFrame(){
+    var video = document.getElementById('vjs_video_3_html5_api');   
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+   //var data  = context.getImageData(10, 10, 50, 50); 
+    var dataURL = canvas.toDataURL();
+
+        //create img
+        var img = document.createElement('img');
+        img.setAttribute('src', dataURL);
+
+        //append img in container div
+        document.getElementById('root').appendChild(img);
   }
 
   addNewSequence(){
