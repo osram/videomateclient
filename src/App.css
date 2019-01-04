@@ -64,8 +64,8 @@ h2{
 }
 
 .item span{
-  position: sticky;
-  top: 45%;
+  position: relative;
+  top: 8%;
 }
 
 .item img{

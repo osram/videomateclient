@@ -31,6 +31,10 @@ export default class TagEditor extends React.Component {
         // re-render
         this.setState({ tags: newTags });
     }
+
+    refocus(){
+        console.log("focus");
+    }
  
     render() {
         const { tags, suggestions } = this.props;
@@ -41,7 +45,9 @@ export default class TagEditor extends React.Component {
                     handleDelete={this.handleDelete}
                     handleAddition={this.props.addTag}
                     handleDrag={this.handleDrag}
-                    delimiters={delimiters} />
+                    delimiters={delimiters}
+                    autofocus={true}
+                    handleInputBlur={this.refocus} />
             </div>
         )
     }

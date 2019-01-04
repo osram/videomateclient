@@ -183,7 +183,7 @@ class App extends Component {
           <div className="itemBar sequencesBelongingToFile">
             {[...this.state.currentFile.sequences.values()].map((sequence, i) =>
               <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}>
-                <img src={this.state.currentSequence.thumbNailImageUrl} />
+                <img src={sequence.thumbNailImageUrl} />
                 <span>{sequence.inPoint.toFixed(2)} - {sequence.outPoint.toFixed(2)}</span>
               </div>
             )}
