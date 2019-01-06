@@ -100,7 +100,7 @@ class App extends Component {
 
   setCurrentFile(file){
     this.setState({currentFile: file});
-    this.videoPlayer.setSrc(file.location, file.type);
+    this.videoPlayer.setSrc(file.url, file.type);
   }
 
   addTagToCurrentSequence(tag){
@@ -189,7 +189,7 @@ class App extends Component {
         <button onClick={(e) => this.updateFileListFromServer()}>Update from server</button>
         <div className="itemBar filesToProcess">
           {this.state.filesToProcess.map((file) =>
-            <div className="item" key={file.location} onClick={(e) => this.setCurrentFile(file)}><span>{file.location}</span></div>
+            <div className="item" key={file.fileName} onClick={(e) => this.setCurrentFile(file)}><span>{file.fileName}</span></div>
           )}
         </div>
         <div className="videoContainer">
@@ -204,7 +204,7 @@ class App extends Component {
          <TagEditor tags={this.getTagValues(this.state.currentSequence.tags)} suggestions={suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
         </div>
         <div className="sequencesContainer">
-          <h2>Sequences beloning to {this.state.currentFile.location}</h2>  
+          <h2>Sequences beloning to {this.state.currentFile.fileName}</h2>  
           <div className="itemBar sequencesBelongingToFile">
             {[...this.state.currentFile.sequences.values()].map((sequence, i) =>
               <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}>

@@ -5,7 +5,9 @@ export class VideoFile{
     comment = "";
     exposureRequiresAdjustment = false;
     framerate = 30;
-    location = "";
+    folder = "";
+    fileName = "";
+    url = "";
     resolution = "";
     rotationRequiresAdjustment = false;
     sequences = new Map();
@@ -17,7 +19,9 @@ export class VideoFile{
             this.comment = json.comment;
             this.exposureRequiresAdjustment = json.exposureRequiresAdjustment;
             this.framerate = json.framerate;
-            this.location = json.location;
+            this.folder = json.folder;
+            this.fileName = json.fileName;
+            this.url = json.url;
             this.resolution = json.resolution;
             this.rotationRequiresAdjustment = json.rotationRequiresAdjustment;
             
