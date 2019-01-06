@@ -14,7 +14,8 @@ import hotkeys from 'hotkeys-js';
  */
 
 import {
-  apiFetchFiles
+  apiFetchFiles,
+  apiSaveVideoFile
 } from './services/fileapi';
 
 
@@ -54,7 +55,7 @@ class App extends Component {
     apiFetchFiles().then(result => {
       let filesToProcess = []
       result.serverResponse.map(file => {
-        filesToProcess.push(new VideoFile(file.location, 'video/mp4'));
+        filesToProcess.push(new VideoFile(file));
       })
       self.setState({"filesToProcess":filesToProcess});
     });
@@ -103,7 +104,7 @@ class App extends Component {
 
   addTagToCurrentSequence(tag){
     var copy = this.state.currentSequence;
-    copy.tags = [...this.state.currentSequence.tags, tag];
+    copy.tags = [...this.state.currentSequence.tags, tag.id];
     this.setState({currentSequence: copy});
   }
 
@@ -138,8 +139,13 @@ class App extends Component {
     /*hotkeys('enter', function(event, handler){ 
       event.preventDefault();
       self.saveSequence();
+    });*/
+    hotkeys('alt+s', function(event, handler){
+      apiSaveVideoFile(self.state.currentFile).then(result => {
+        console.log("File saved");
+      });
     });
-*/
+
     hotkeys('ctrl+space', function(event, handler){ 
       event.preventDefault();
       self.videoPlayer.playSequence(self.state.currentSequence);
@@ -148,6 +154,16 @@ class App extends Component {
       event.preventDefault();
       self.addNewSequence();
     });
+  }
+
+  getTagValues(tagIdArray){
+    let tags = [];
+    tagIdArray.map(tag => {
+      tags.push(suggestions.find(suggestion => {
+        return suggestion.id == tag;
+      }));
+    });
+    return tags;
   }
 
   render() {
@@ -176,7 +192,7 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
-         <TagEditor tags={this.state.currentSequence.tags} suggestions={suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
+         <TagEditor tags={this.getTagValues(this.state.currentSequence.tags)} suggestions={suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
         </div>
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.location}</h2>  

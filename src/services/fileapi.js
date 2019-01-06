@@ -156,6 +156,16 @@ export const apiFetchFiles = () => {
     return baseFetch('', serverUrl + '/files/');
 };
 
+export const apiSaveVideoFile = (videoFile) => {
+    let copyToSendToServer = Object.assign({}, videoFile);
+     //convert map to array to be able to send as json
+    copyToSendToServer.sequences = [];
+    [...videoFile.sequences.values()].map(sequence => {
+        copyToSendToServer.sequences.push(sequence);
+    })
+    return basePost(copyToSendToServer, serverUrl + '/save');
+}
+
 export const apiPostForm = (form) => {
     return basePostFormAsMultiData(form);
 }
