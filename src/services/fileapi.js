@@ -166,6 +166,10 @@ export const apiSaveVideoFile = (videoFile) => {
     return basePost(copyToSendToServer, serverUrl + '/save');
 }
 
+export const apiSaveSuggestions = (suggestions) => {
+    return basePost(suggestions, serverUrl + '/suggestions/save');
+}
+
 export const apiPostForm = (form) => {
     return basePostFormAsMultiData(form);
 }

@@ -15,7 +15,8 @@ import hotkeys from 'hotkeys-js';
 
 import {
   apiFetchFiles,
-  apiSaveVideoFile
+  apiSaveVideoFile,
+  apiSaveSuggestions
 } from './services/fileapi';
 
 
@@ -105,6 +106,7 @@ class App extends Component {
   addTagToCurrentSequence(tag){
     if(!this.getSuggestion(tag.id)){
       suggestions.push(tag);
+      apiSaveSuggestions(suggestions).then(() => {console.log("suggestions saved")});
     }
     var copy = this.state.currentSequence;
     copy.tags = [...this.state.currentSequence.tags, tag.id];
