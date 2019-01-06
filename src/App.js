@@ -103,6 +103,9 @@ class App extends Component {
   }
 
   addTagToCurrentSequence(tag){
+   /* if(){
+
+    }*/
     var copy = this.state.currentSequence;
     copy.tags = [...this.state.currentSequence.tags, tag.id];
     this.setState({currentSequence: copy});
@@ -112,6 +115,20 @@ class App extends Component {
     const { tags } = this.state.currentSequence;
     this.setState({
      currentSequence: {tags: tags.filter((tag, index) => index !== idx),}});
+  }
+
+  getSuggestion(id){
+    return suggestions.find(suggestion => {
+      return suggestion.id == id;
+    });
+  }
+
+  getTagValues(tagIdArray){
+    let tags = [];
+    tagIdArray.map(tag => {
+      tags.push(this.getSuggestion(tag));
+    });
+    return tags;
   }
 
   initHotKeys(){
@@ -154,16 +171,6 @@ class App extends Component {
       event.preventDefault();
       self.addNewSequence();
     });
-  }
-
-  getTagValues(tagIdArray){
-    let tags = [];
-    tagIdArray.map(tag => {
-      tags.push(suggestions.find(suggestion => {
-        return suggestion.id == tag;
-      }));
-    });
-    return tags;
   }
 
   render() {
