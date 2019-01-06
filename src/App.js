@@ -103,9 +103,9 @@ class App extends Component {
   }
 
   addTagToCurrentSequence(tag){
-   /* if(){
-
-    }*/
+    if(!this.getSuggestion(tag.id)){
+      suggestions.push(tag);
+    }
     var copy = this.state.currentSequence;
     copy.tags = [...this.state.currentSequence.tags, tag.id];
     this.setState({currentSequence: copy});
