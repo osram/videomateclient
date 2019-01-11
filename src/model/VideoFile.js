@@ -13,6 +13,8 @@ export class VideoFile{
     sequences = new Map();
     status = ""
     type = "";
+    thumbNailImageUrl = "";
+    
 
     constructor(json){
         if(json){
@@ -24,6 +26,7 @@ export class VideoFile{
             this.url = json.url;
             this.resolution = json.resolution;
             this.rotationRequiresAdjustment = json.rotationRequiresAdjustment;
+            this.thumbNailImageUrl = json.thumbNailImageUrl;
             
             //Remapp the array of sequences to an map
             if(json.sequences != null){

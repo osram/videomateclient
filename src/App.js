@@ -189,7 +189,10 @@ class App extends Component {
         <button onClick={(e) => this.updateFileListFromServer()}>Update from server</button>
         <div className="itemBar filesToProcess">
           {this.state.filesToProcess.map((file) =>
-            <div className="item" key={file.fileName} onClick={(e) => this.setCurrentFile(file)}><span>{file.fileName}</span></div>
+            <div className="item" key={file.fileName} onClick={(e) => this.setCurrentFile(file)}>
+              <img src={file.thumbNailImageUrl} />
+              <span>{file.fileName}</span>
+            </div>
           )}
         </div>
         <div className="videoContainer">
