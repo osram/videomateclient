@@ -5,14 +5,14 @@
   "dependencies": {
     "hotkeys-js": "^3.4.1",
     "material-design-icons": "^3.0.1",
-    "material-ui": "^0.20.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "material-ui": "^0.20.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
     "react-material-tags": "^1.0.1",
     "react-scripts": "1.0.17",
     "react-tag-input": "^6.1.0",
     "uuid": "^3.3.2",
-    "video.js": "^6.4.0"
+    "video.js": "^6.13.0"
   },
   "scripts": {
     "start": "react-scripts start",
