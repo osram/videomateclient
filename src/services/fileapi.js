@@ -156,6 +156,10 @@ export const apiFetchFiles = () => {
     return baseFetch('', serverUrl + '/files/');
 };
 
+export const apiFetchSuggestions = () => {
+    return baseFetch('', serverUrl + '/tagSuggestions/');
+};
+
 export const apiSaveVideoFile = (videoFile) => {
     let copyToSendToServer = Object.assign({}, videoFile);
      //convert map to array to be able to send as json
@@ -167,7 +171,7 @@ export const apiSaveVideoFile = (videoFile) => {
 }
 
 export const apiSaveSuggestions = (suggestions) => {
-    return basePost(suggestions, serverUrl + '/suggestions/save');
+    return basePost(suggestions, serverUrl + '/tagSuggestions/save');
 }
 
 export const apiPostForm = (form) => {

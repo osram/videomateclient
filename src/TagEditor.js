@@ -37,11 +37,10 @@ export default class TagEditor extends React.Component {
     }
  
     render() {
-        const { tags, suggestions } = this.props;
         return (
             <div>
-                <ReactTags tags={tags}
-                    suggestions={suggestions}
+                <ReactTags tags={this.props.tags}
+                    suggestions={this.props.suggestions}
                     handleDelete={this.handleDelete}
                     handleAddition={this.props.addTag}
                     handleDrag={this.handleDrag}

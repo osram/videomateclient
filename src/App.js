@@ -16,14 +16,16 @@ import hotkeys from 'hotkeys-js';
 import {
   apiFetchFiles,
   apiSaveVideoFile,
-  apiSaveSuggestions
+  apiSaveSuggestions,
+  apiFetchSuggestions
 } from './services/fileapi';
 
-
+/*
 const tags = [
   { id: "Thailand", text: "Thailand" },
   { id: "India", text: "India" }
-];
+];*/
+/*
 const suggestions= [
   { id: 'USA', text: 'USA' },
   { id: 'Germany', text: 'Germany' },
@@ -32,7 +34,7 @@ const suggestions= [
   { id: 'Sri Lanka', text: 'Sri Lanka' },
   { id: 'Thailand', text: 'Thailand' }
 ];
-
+*/
 const videoJsOptions = {
   autoplay: false,
   controls: true,
@@ -48,7 +50,8 @@ class App extends Component {
   state = {
       filesToProcess : [],
       currentSequence: new Sequence(),
-      currentFile: new VideoFile()
+      currentFile: new VideoFile(),
+      suggestions:[]
   }
 
   updateFileListFromServer(){
@@ -60,6 +63,9 @@ class App extends Component {
       })
       self.setState({"filesToProcess":filesToProcess});
     });
+    apiFetchSuggestions().then(result => {
+      self.setState({"suggestions": result.serverResponse});
+    })
     this.initHotKeys();
   }
 
@@ -105,8 +111,8 @@ class App extends Component {
 
   addTagToCurrentSequence(tag){
     if(!this.getSuggestion(tag.id)){
-      suggestions.push(tag);
-      apiSaveSuggestions(suggestions).then(() => {console.log("suggestions saved")});
+      this.state.suggestions.push(tag);
+      apiSaveSuggestions(this.state.suggestions).then(() => {console.log("suggestions saved")});
     }
     var copy = this.state.currentSequence;
     copy.tags = [...this.state.currentSequence.tags, tag.id];
@@ -120,7 +126,7 @@ class App extends Component {
   }
 
   getSuggestion(id){
-    return suggestions.find(suggestion => {
+    return this.state.suggestions.find(suggestion => {
       return suggestion.id == id;
     });
   }
@@ -204,7 +210,7 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
-         <TagEditor tags={this.getTagValues(this.state.currentSequence.tags)} suggestions={suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
+         <TagEditor tags={this.getTagValues(this.state.currentSequence.tags)} suggestions={this.state.suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
         </div>
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.fileName}</h2>  
