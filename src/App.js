@@ -119,10 +119,14 @@ class App extends Component {
     this.setState({currentSequence: copy});
   }
 
-  removeTagFromCurrentSequence(idx){
-    const { tags } = this.state.currentSequence;
-    this.setState({
-     currentSequence: {tags: tags.filter((tag, index) => index !== idx),}});
+  removeTagFromCurrentSequence(idx)
+  {
+    if(this.state.currentSequence)
+    {
+      const { tags } = this.state.currentSequence;
+      this.setState({
+        currentSequence: {tags: tags.filter((tag, index) => index !== idx),}});
+      }
   }
 
   getSuggestion(id){
