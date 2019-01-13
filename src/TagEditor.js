@@ -19,6 +19,8 @@ export default class TagEditor extends React.Component {
     }
 
     addTag(tag){
+        tag.id = tag.id.toUpperCase().replace(' ','_');
+        tag.text = tag.text.charAt(0).toUpperCase() + tag.text.slice(1);
         this.props.addTag(this.props.type, tag);
     }
 

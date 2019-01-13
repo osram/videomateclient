@@ -54,15 +54,10 @@ class App extends Component {
       suggestions:{tag:[], issue:[]},
   }
 
-  updateFileListFromServer(){
+  constructor(props) {
+    super(props);
     var self = this;
-    apiFetchFiles().then(result => {
-      let filesToProcess = []
-      result.serverResponse.map(file => {
-        filesToProcess.push(new VideoFile(file));
-      })
-      self.setState({"filesToProcess":filesToProcess});
-    });
+    
     apiFetchSuggestions("tag").then(result => {
       var copy = this.state.suggestions;
       copy["tag"] = result.serverResponse;
@@ -74,6 +69,17 @@ class App extends Component {
       self.setState({"suggestions": copy});
     });
     this.initHotKeys();
+  }
+
+  updateFileListFromServer(){
+    var self = this;
+    apiFetchFiles().then(result => {
+      let filesToProcess = []
+      result.serverResponse.map(file => {
+        filesToProcess.push(new VideoFile(file));
+      })
+      self.setState({"filesToProcess":filesToProcess});
+    });
   }
 
   updateFileListState(newFileList){
