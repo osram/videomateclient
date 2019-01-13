@@ -14,6 +14,7 @@ export class VideoFile{
     status = ""
     type = "";
     thumbNailImageUrl = "";
+    markedAsDeleted = false;
     
 
     constructor(json){
