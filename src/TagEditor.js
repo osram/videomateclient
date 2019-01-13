@@ -13,12 +13,17 @@ const delimiters = [KeyCodes.comma, KeyCodes.enter];
 export default class TagEditor extends React.Component {
     constructor(props) {
         super(props);
- 
-       /* this.state = {
-          */
-        this.handleDelete = this.props.removeTag.bind(this);
-        
+        this.addTag = this.addTag.bind(this);
+        this.removeTag = this.removeTag.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
+    }
+
+    addTag(tag){
+        this.props.addTag(this.props.type, tag);
+    }
+
+    removeTag(idx){
+        this.props.removeTag(this.props.type, idx);
     }
  
     handleDrag(tag, currPos, newPos) {
@@ -41,8 +46,8 @@ export default class TagEditor extends React.Component {
             <div>
                 <ReactTags tags={this.props.tags}
                     suggestions={this.props.suggestions}
-                    handleDelete={this.handleDelete}
-                    handleAddition={this.props.addTag}
+                    handleDelete={this.remoteTag}
+                    handleAddition={this.addTag}
                     handleDrag={this.handleDrag}
                     delimiters={delimiters}
                     autofocus={true}

@@ -51,7 +51,7 @@ class App extends Component {
       filesToProcess : [],
       currentSequence: new Sequence(),
       currentFile: new VideoFile(),
-      suggestions:[]
+      suggestions:{tag:[], issue:[]},
   }
 
   updateFileListFromServer(){
@@ -63,9 +63,16 @@ class App extends Component {
       })
       self.setState({"filesToProcess":filesToProcess});
     });
-    apiFetchSuggestions().then(result => {
-      self.setState({"suggestions": result.serverResponse});
-    })
+    apiFetchSuggestions("tag").then(result => {
+      var copy = this.state.suggestions;
+      copy["tag"] = result.serverResponse;
+      self.setState({"suggestions": copy});
+    });
+    apiFetchSuggestions("issue").then(result => {
+      var copy = this.state.suggestions;
+      copy["issue"] = result.serverResponse;
+      self.setState({"suggestions": copy});
+    });
     this.initHotKeys();
   }
 
@@ -109,38 +116,59 @@ class App extends Component {
     this.videoPlayer.setSrc(file.url, file.type);
   }
 
-  addTagToCurrentSequence(tag){
-    if(!this.getSuggestion(tag.id)){
-      this.state.suggestions.push(tag);
-      apiSaveSuggestions(this.state.suggestions).then(() => {console.log("suggestions saved")});
+  addSuggestionToCurrentSequence(type, tag){
+    if(!this.getSuggestion(type, tag.id)){
+      this.state.suggestions[type].push(tag);
+      apiSaveSuggestions(type, this.state.suggestions[type]).then(() => {console.log("suggestions saved")});
     }
     var copy = this.state.currentSequence;
-    copy.tags = [...this.state.currentSequence.tags, tag.id];
+    if(type === "tag"){
+      copy.tags = [...this.state.currentSequence.tags, tag.id];
+    }
+    if(type === "issue"){
+      copy.issues = [...this.state.currentSequence.issues, tag.id];
+    }
     this.setState({currentSequence: copy});
   }
 
-  removeTagFromCurrentSequence(idx)
+  removeSuggestionFromCurrentSequence(type, idx)
   {
     if(this.state.currentSequence)
     {
-      const { tags } = this.state.currentSequence;
-      this.setState({
-        currentSequence: {tags: tags.filter((tag, index) => index !== idx),}});
+      if(type === "tag"){
+        const { tags } = this.state.currentSequence;
+        this.setState({
+          currentSequence: {tags: tags.filter((tag, index) => index !== idx),}
+        });
       }
+      
+      if(type === "issue"){
+        const { issues } = this.state.currentSequence;
+        this.setState({
+          currentSequence: {ussues: issues.filter((tag, index) => index !== idx),}
+        });
+      }
+    }
   }
 
-  getSuggestion(id){
-    return this.state.suggestions.find(suggestion => {
+  getSuggestion(type, id){
+    return this.state.suggestions[type].find(suggestion => {
       return suggestion.id == id;
     });
   }
 
-  getTagValues(tagIdArray){
+  getTagValues(type, tagIdArray){
     let tags = [];
     tagIdArray.map(tag => {
-      tags.push(this.getSuggestion(tag));
+      tags.push(this.getSuggestion(type, tag));
     });
     return tags;
+  }
+
+  toogleVideoFileMarkedAsDeleted(){
+    var copy = this.state.currentFile;
+    copy.markedAsDeleted = !copy.markedAsDeleted;
+    this.setState({currentFile:copy});
   }
 
   initHotKeys(){
@@ -214,7 +242,13 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
-         <TagEditor tags={this.getTagValues(this.state.currentSequence.tags)} suggestions={this.state.suggestions} addTag={this.addTagToCurrentSequence.bind(this)} removeTag={this.removeTagFromCurrentSequence}></TagEditor>
+         <br/>
+         <span>
+           <input name="markedAsDeleted" type="checkbox" checked={this.state.currentFile.markedAsDeleted} onChange={this.toogleVideoFileMarkedAsDeleted.bind(this)} />
+           The complete file should be deleted
+         </span>
+         Taggar: <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
+         Tekniska problem:<TagEditor type={"issue"} tags={this.getTagValues("issue", this.state.currentSequence.issues)} suggestions={this.state.suggestions.issue} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
         </div>
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.fileName}</h2>  

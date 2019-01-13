@@ -1,5 +1,6 @@
 body{
   background-color:#000;
+
 }
 
 h1,h2,h3{
@@ -7,6 +8,9 @@ h1,h2,h3{
   line-height: 10px;
 }
 
+p, span{
+  color:#ececec;
+}
 h1{
 
 }
@@ -123,6 +127,7 @@ div.ReactTags__selected span.ReactTags__tag {
   margin: 0 5px;
   cursor: move;
   border-radius: 2px;
+  color:#000;
 }
 div.ReactTags__selected a.ReactTags__remove {
   color: #aaa;

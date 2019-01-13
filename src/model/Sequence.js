@@ -5,7 +5,7 @@ export class Sequence{
     inPoint = 0.0;
     outPoint = 0.0;
     tags = [];
-
+    issues = [];
     toString(){
         JSON.stringify(this);
     }

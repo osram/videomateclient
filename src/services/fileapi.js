@@ -156,8 +156,8 @@ export const apiFetchFiles = () => {
     return baseFetch('', serverUrl + '/files/');
 };
 
-export const apiFetchSuggestions = () => {
-    return baseFetch('', serverUrl + '/tagSuggestions/');
+export const apiFetchSuggestions = (type) => {
+    return baseFetch('', serverUrl + '/tagSuggestions/' + type);
 };
 
 export const apiSaveVideoFile = (videoFile) => {
@@ -170,8 +170,8 @@ export const apiSaveVideoFile = (videoFile) => {
     return basePost(copyToSendToServer, serverUrl + '/save');
 }
 
-export const apiSaveSuggestions = (suggestions) => {
-    return basePost(suggestions, serverUrl + '/tagSuggestions/save');
+export const apiSaveSuggestions = (type, suggestions) => {
+    return basePost(suggestions, serverUrl + '/tagSuggestions/' + type + '/save');
 }
 
 export const apiPostForm = (form) => {
