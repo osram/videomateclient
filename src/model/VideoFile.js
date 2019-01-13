@@ -28,6 +28,7 @@ export class VideoFile{
             this.resolution = json.resolution;
             this.rotationRequiresAdjustment = json.rotationRequiresAdjustment;
             this.thumbNailImageUrl = json.thumbNailImageUrl;
+            this.markedAsDeleted = json.markedAsDeleted;
             
             //Remapp the array of sequences to an map
             if(json.sequences != null){
