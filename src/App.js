@@ -120,6 +120,13 @@ class App extends Component {
   setCurrentFile(file){
     this.setState({currentFile: file});
     this.videoPlayer.setSrc(file.url, file.type);
+    if(this.state.currentFile.sequences.size > 0){
+      this.setCurrentSequence(this.state.currentFile.sequences.values().next().value);
+    }
+    else{
+      this.addNewSequence();
+    }
+    
   }
 
   addSuggestionToCurrentSequence(type, tag){
