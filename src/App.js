@@ -118,15 +118,14 @@ class App extends Component {
   }
 
   setCurrentFile(file){
-    this.setState({currentFile: file});
     this.videoPlayer.setSrc(file.url, file.type);
-    if(this.state.currentFile.sequences.size > 0){
-      this.setCurrentSequence(this.state.currentFile.sequences.values().next().value);
-    }
-    else{
-      this.addNewSequence();
-    }
     
+    if(file.sequences.size == 0){
+      let sequence = new Sequence();
+      file.addSequence(sequence);
+    }
+    this.setState({currentFile: file});
+    this.setCurrentSequence(file.sequences.values().next().value);   
   }
 
   addSuggestionToCurrentSequence(type, tag){
@@ -262,7 +261,7 @@ class App extends Component {
          </span>
          Taggar: <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
          Tekniska problem:<TagEditor type={"issue"} tags={this.getTagValues("issue", this.state.currentSequence.issues)} suggestions={this.state.suggestions.issue} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
-        </div>
+         </div>
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.fileName}</h2>  
           <div className="itemBar sequencesBelongingToFile">
