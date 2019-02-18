@@ -9,7 +9,7 @@ const onPlayerTimeUpdate = function (){
     _VideoPlayer.player.pause();
     _VideoPlayer.setState({sequence: null, playingSequence: false});
   }
-  console.log(_VideoPlayer.getCurrentTime());
+  //console.log(_VideoPlayer.getCurrentTime());
 }
 
 export default class VideoPlayer extends React.Component {

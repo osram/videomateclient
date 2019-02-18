@@ -14,6 +14,7 @@ import hotkeys from 'hotkeys-js';
  */
 
 import {
+  apiFetchFolders,
   apiFetchFiles,
   apiSaveVideoFile,
   apiSaveSuggestions,
@@ -48,15 +49,24 @@ const videoJsOptions = {
 class App extends Component {
   videoPlayer = null;
   state = {
+      availableFolders : [],
+      currentFolder: "",
       filesToProcess : [],
       currentSequence: new Sequence(),
       currentFile: new VideoFile(),
       suggestions:{tag:[], issue:[]},
+      filesToProcessFilter: "Not processed",
+      saveInProgress: false
   }
 
   constructor(props) {
     super(props);
     var self = this;
+
+    apiFetchFolders().then(result => {
+      this.setState({"availableFolders": result.serverResponse});
+      this.forceUpdate();
+    });
     
     apiFetchSuggestions("tag").then(result => {
       var copy = this.state.suggestions;
@@ -71,10 +81,10 @@ class App extends Component {
     this.initHotKeys();
   }
 
-  updateFileListFromServer(){
+  updateFileListFromServer(folder){
     var self = this;
-    apiFetchFiles().then(result => {
-      let filesToProcess = []
+    apiFetchFiles(folder).then(result => {
+      let filesToProcess = [];
       result.serverResponse.map(file => {
         filesToProcess.push(new VideoFile(file));
       })
@@ -164,6 +174,7 @@ class App extends Component {
   }
 
   getSuggestion(type, id){
+    console.log("mapping suggestion:" + type + "::" + id);
     return this.state.suggestions[type].find(suggestion => {
       return suggestion.id == id;
     });
@@ -172,7 +183,10 @@ class App extends Component {
   getTagValues(type, tagIdArray){
     let tags = [];
     tagIdArray.map(tag => {
-      tags.push(this.getSuggestion(type, tag));
+      tag = this.getSuggestion(type, tag)
+      if(tag){
+        tags.push(tag);
+      }
     });
     return tags;
   }
@@ -181,6 +195,41 @@ class App extends Component {
     var copy = this.state.currentFile;
     copy.markedAsDeleted = !copy.markedAsDeleted;
     this.setState({currentFile:copy});
+  }
+
+  changeStatus(event){
+    let copy = this.state.currentFile;
+    copy.status = event.target.value;
+    this.setState({currentFile: copy});
+  }
+
+  changeFilesToProcessFilter(event){
+    this.setState({filesToProcessFilter: event.target.value});
+  }
+
+  shouldFileBeDisplayedInFilesToProcess(file){
+    if(this.state.filesToProcessFilter == "Marked as deleted" && file.markedAsDeleted){
+      return true;
+    }
+    if(this.state.filesToProcessFilter == "all"){
+      return true;
+    }
+    if(this.state.filesToProcessFilter == "Not processed" && file.status == "Not processed" && !file.markedAsDeleted){
+      return true;
+    }
+    else if(this.state.filesToProcessFilter == "categorized" && file.status == "categorized"){
+      return true;
+    }
+    //sequences_has_been_processed
+    return false;
+  }
+
+  changeCurrentFolder(event){
+    if(event && event.target){
+      let folder = event.target.value;
+      this.setState({"currentFolder": folder});
+      this.updateFileListFromServer(folder);
+    }
   }
 
   initHotKeys(){
@@ -210,8 +259,15 @@ class App extends Component {
       self.saveSequence();
     });*/
     hotkeys('alt+s', function(event, handler){
+      self.setState({"saveInProgress": true});
       apiSaveVideoFile(self.state.currentFile).then(result => {
-        console.log("File saved");
+        if(result.serverResponse == "Success"){
+          self.setState({"saveInProgress": false});
+          console.log("File saved");
+        }
+        else{
+          alert("Failed to save!");
+        }
       });
     });
 
@@ -226,6 +282,13 @@ class App extends Component {
   }
 
   render() {
+    let totalNrOfFiles = this.state.filesToProcess.length;
+    let filteredNrOfFile = 0;
+    this.state.filesToProcess.map((file) => {
+      if(this.shouldFileBeDisplayedInFilesToProcess(file)){
+        filteredNrOfFile++;
+      }
+    })
     return (
       <MuiThemeProvider>
       <div className="App">
@@ -236,14 +299,38 @@ class App extends Component {
         </header>
         
         <h2>Files to process</h2>
-        <button onClick={(e) => this.updateFileListFromServer()}>Update from server</button>
+        <span>
+          <select onChange={this.changeCurrentFolder.bind(this)}>
+            {this.state.availableFolders.map((folder) => {
+              return <option value={folder}>{folder}</option>
+            })}
+          </select>
+          {/*<button onClick={(e) => this.updateFileListFromServer()}>Update from server</button>*/}
+          Show only files with status:
+          <select value={this.state.filesToProcessFilter} onChange={this.changeFilesToProcessFilter.bind(this)}>
+            <option value="all">All files</option>
+            <option value="Not processed">Not processed</option>
+            <option value="categorized">Categorized</option> 
+            <option value="Marked as deleted">Marked as deleted</option>    
+          </select>
+        </span>
+        <h3>
+          {filteredNrOfFile}/{totalNrOfFiles}
+          {this.state.saveInProgress ? " Saving" : ""}
+        </h3>
         <div className="itemBar filesToProcess">
+          <span></span>
           {this.state.filesToProcess.map((file) =>
-            <div className="item" key={file.fileName} onClick={(e) => this.setCurrentFile(file)}>
-              <img src={file.thumbNailImageUrl} />
-              <span>{file.fileName}</span>
-            </div>
-          )}
+            {
+              return this.shouldFileBeDisplayedInFilesToProcess(file) ?
+              (
+                <div className="item" key={file.fileName} onClick={(e) => this.setCurrentFile(file)}>
+                  <img src={file.thumbNailImageUrl} />
+                  <span>{file.fileName}</span>
+                </div>
+              ):''
+            }
+            )}
         </div>
         <div className="videoContainer">
           <VideoPlayer {...videoJsOptions} ref={(child) => { this.videoPlayer = child; }}/>
@@ -256,6 +343,12 @@ class App extends Component {
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
          <br/>
          <span>
+           Status:<select value={this.state.currentFile.status} onChange={this.changeStatus.bind(this)}>
+             <option value="not_processed">Not Processed</option>
+             <option value="categorized">Categorized</option>
+             <option value="sequences_has_been_processed">Sequences has beed processed</option>
+           </select>
+           <br />
            <input name="markedAsDeleted" type="checkbox" checked={this.state.currentFile.markedAsDeleted} onChange={this.toogleVideoFileMarkedAsDeleted.bind(this)} />
            The complete file should be deleted
          </span>

@@ -152,8 +152,12 @@ export const basePost = (postDO: any, api: string, felmeddelande: string = 'Någ
         });
 };
 */
-export const apiFetchFiles = () => {
-    return baseFetch('', serverUrl + '/files/');
+export const apiFetchFolders = () => {
+    return baseFetch('', serverUrl + "/folders");
+}
+
+export const apiFetchFiles = (folderName) => {
+    return baseFetch('', serverUrl + '/files/' + folderName);
 };
 
 export const apiFetchSuggestions = (type) => {
