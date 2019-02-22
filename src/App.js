@@ -43,7 +43,7 @@ const videoJsOptions = {
     src: './DJI_0839.mp4',
     type: 'video/mp4'
   }],
-  width:500
+  width:700
 }
 
 class App extends Component {
@@ -298,8 +298,11 @@ class App extends Component {
           <p>- Helping you cut and organize with a lite magick.</p>
         </header>
         
-        <h2>Files to process</h2>
-        <span>
+        <h2>Files to process 
+          <span> {filteredNrOfFile}/{totalNrOfFiles}</span>
+          {this.state.saveInProgress ? " Saving" : ""}
+        </h2>
+        <span>Folder to display: 
           <select onChange={this.changeCurrentFolder.bind(this)}>
             {this.state.availableFolders.map((folder) => {
               return <option value={folder}>{folder}</option>
@@ -314,10 +317,6 @@ class App extends Component {
             <option value="Marked as deleted">Marked as deleted</option>    
           </select>
         </span>
-        <h3>
-          {filteredNrOfFile}/{totalNrOfFiles}
-          {this.state.saveInProgress ? " Saving" : ""}
-        </h3>
         <div className="itemBar filesToProcess">
           <span></span>
           {this.state.filesToProcess.map((file) =>
@@ -341,20 +340,23 @@ class App extends Component {
           <i class="material-icons" onClick={(e) => this.videoPlayer.seek(1)}>skip_next</i>
           <i class="material-icons" onClick={(e) => this.saveSequence()}>alarm_add</i>
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
-         <br/>
+        </div>
+        <div class="fileAttributes container">
          <span>
            Status:<select value={this.state.currentFile.status} onChange={this.changeStatus.bind(this)}>
              <option value="not_processed">Not Processed</option>
              <option value="categorized">Categorized</option>
              <option value="sequences_has_been_processed">Sequences has beed processed</option>
            </select>
-           <br />
            <input name="markedAsDeleted" type="checkbox" checked={this.state.currentFile.markedAsDeleted} onChange={this.toogleVideoFileMarkedAsDeleted.bind(this)} />
            The complete file should be deleted
          </span>
-         Taggar: <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
-         Tekniska problem:<TagEditor type={"issue"} tags={this.getTagValues("issue", this.state.currentSequence.issues)} suggestions={this.state.suggestions.issue} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
-         </div>
+        </div>
+        <div class="sequenceAttributes container">
+         <span>Taggs:</span> <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
+         <span>Technical issues:</span><TagEditor type={"issue"} tags={this.getTagValues("issue", this.state.currentSequence.issues)} suggestions={this.state.suggestions.issue} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
+        </div>
+        
         <div className="sequencesContainer">
           <h2>Sequences beloning to {this.state.currentFile.fileName}</h2>  
           <div className="itemBar sequencesBelongingToFile">
