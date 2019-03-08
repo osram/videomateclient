@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import logo from './yoda.jpg';
-import './App.css';
+import logo from '../yoda.jpg';
+import '../App.css';
 import VideoPlayer from './VideoPlayer.js'
 import TagEditor from './TagEditor.js'
-import { VideoFile } from './model/VideoFile';
-import { Sequence } from './model/Sequence';
+import { VideoFile } from '../model/VideoFile';
+import { Sequence } from '../model/Sequence';
 //import Tags from 'react-material-tags';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import hotkeys from 'hotkeys-js';
@@ -19,7 +19,7 @@ import {
   apiSaveVideoFile,
   apiSaveSuggestions,
   apiFetchSuggestions
-} from './services/fileapi';
+} from '../services/fileapi';
 
 /*
 const tags = [
