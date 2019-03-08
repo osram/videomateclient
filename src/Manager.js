@@ -46,7 +46,7 @@ const videoJsOptions = {
   width:700
 }
 
-class App extends Component {
+class Manager extends Component {
   videoPlayer = null;
   state = {
       availableFolders : [],
@@ -374,4 +374,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default Manager;
