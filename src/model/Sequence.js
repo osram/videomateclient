@@ -6,6 +6,7 @@ export class Sequence{
     outPoint = 0.0;
     tags = [];
     issues = [];
+    thumbNailImageUrl = "";
     toString(){
         JSON.stringify(this);
     }
