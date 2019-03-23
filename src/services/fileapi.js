@@ -178,6 +178,14 @@ export const apiSaveSuggestions = (type, suggestions) => {
     return basePost(suggestions, serverUrl + '/tagSuggestions/' + type + '/save');
 }
 
+export const apiFetchSearchIndex = () => {
+    return baseFetch('', serverUrl + '/searchIndex');
+};
+
+export const apiSaveSearchIndex = (index) => {
+    return basePost(index, serverUrl + '/searchIndex/save');
+}
+
 export const apiPostForm = (form) => {
     return basePostFormAsMultiData(form);
 }

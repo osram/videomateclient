@@ -7,6 +7,7 @@ export class Sequence{
     tags = [];
     issues = [];
     thumbNailImageUrl = "";
+    rating = 0;
     toString(){
         JSON.stringify(this);
     }

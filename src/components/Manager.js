@@ -203,6 +203,12 @@ class Manager extends Component {
     this.setState({currentFile: copy});
   }
 
+  changeRating(event){
+    let copy = this.state.currentSequence;
+    copy.rating = event.target.value;
+    this.setState({currentSequence: copy});
+  }
+
   changeFilesToProcessFilter(event){
     this.setState({filesToProcessFilter: event.target.value});
   }
@@ -291,7 +297,7 @@ class Manager extends Component {
     })
     return (
       <MuiThemeProvider>
-      <div className="App">
+      <div className="Manager">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">VideoMate</h1>
@@ -342,17 +348,30 @@ class Manager extends Component {
          {/* <Tags defTags={defTags} sourceTags={sourceTags} />*/}
         </div>
         <div class="fileAttributes container">
+         <h2>File attributes</h2>
          <span>
            Status:<select value={this.state.currentFile.status} onChange={this.changeStatus.bind(this)}>
              <option value="not_processed">Not Processed</option>
              <option value="categorized">Categorized</option>
              <option value="sequences_has_been_processed">Sequences has beed processed</option>
-           </select>
+           </select><br/>
            <input name="markedAsDeleted" type="checkbox" checked={this.state.currentFile.markedAsDeleted} onChange={this.toogleVideoFileMarkedAsDeleted.bind(this)} />
-           The complete file should be deleted
+           Mark file as deleted
          </span>
         </div>
         <div class="sequenceAttributes container">
+          <h2>Sequence attributes</h2>
+          <span>
+            Rating:
+            <select value={this.state.currentSequence.rating} onChange={this.changeRating.bind(this)}>
+              <option value="">Choose rating of sequence</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+          </select>
+         </span><br/>
          <span>Taggs:</span> <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
          <span>Technical issues:</span><TagEditor type={"issue"} tags={this.getTagValues("issue", this.state.currentSequence.issues)} suggestions={this.state.suggestions.issue} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
         </div>
