@@ -130,6 +130,10 @@ h2{
   height:180px;
 }
 
+.Search .sequencesBelongingToFile{
+  height:100%;
+}
+
 .videoContainer, .sequencesContainer{
   margin-top:10px;
   float:left;
