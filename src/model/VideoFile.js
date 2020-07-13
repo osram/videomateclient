@@ -1,4 +1,3 @@
-import { Sequence } from "./Sequence";
 
 export class VideoFile{
     
@@ -32,7 +31,7 @@ export class VideoFile{
             
             //Remapp the array of sequences to an map
             if(json.sequences != null){
-                json.sequences.map(sequence => {
+                json.sequences.forEach(sequence => {
                     this.sequences.set(sequence.id, sequence);
                 });
             }

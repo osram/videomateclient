@@ -85,7 +85,7 @@ class Manager extends Component {
     var self = this;
     apiFetchFiles(folder).then(result => {
       let filesToProcess = [];
-      result.serverResponse.map(file => {
+      result.serverResponse.forEach(file => {
         filesToProcess.push(new VideoFile(file));
       })
       self.setState({"filesToProcess":filesToProcess});
@@ -130,7 +130,7 @@ class Manager extends Component {
   setCurrentFile(file){
     this.videoPlayer.setSrc(file.url, file.type);
     
-    if(file.sequences.size == 0){
+    if(file.sequences.size === 0){
       let sequence = new Sequence();
       file.addSequence(sequence);
     }
@@ -176,13 +176,13 @@ class Manager extends Component {
   getSuggestion(type, id){
     console.log("mapping suggestion:" + type + "::" + id);
     return this.state.suggestions[type].find(suggestion => {
-      return suggestion.id == id;
+      return suggestion.id === id;
     });
   }
 
   getTagValues(type, tagIdArray){
     let tags = [];
-    tagIdArray.map(tag => {
+    tagIdArray.forEach(tag => {
       tag = this.getSuggestion(type, tag)
       if(tag){
         tags.push(tag);
@@ -214,16 +214,16 @@ class Manager extends Component {
   }
 
   shouldFileBeDisplayedInFilesToProcess(file){
-    if(this.state.filesToProcessFilter == "Marked as deleted" && file.markedAsDeleted){
+    if(this.state.filesToProcessFilter === "Marked as deleted" && file.markedAsDeleted){
       return true;
     }
-    if(this.state.filesToProcessFilter == "all"){
+    if(this.state.filesToProcessFilter === "all"){
       return true;
     }
-    if(this.state.filesToProcessFilter == "Not processed" && file.status == "Not processed" && !file.markedAsDeleted){
+    if(this.state.filesToProcessFilter === "Not processed" && file.status === "Not processed" && !file.markedAsDeleted){
       return true;
     }
-    else if(this.state.filesToProcessFilter == "categorized" && file.status == "categorized"){
+    else if(this.state.filesToProcessFilter === "categorized" && file.status === "categorized"){
       return true;
     }
     //sequences_has_been_processed
@@ -267,7 +267,7 @@ class Manager extends Component {
     hotkeys('alt+s', function(event, handler){
       self.setState({"saveInProgress": true});
       apiSaveVideoFile(self.state.currentFile).then(result => {
-        if(result.serverResponse == "Success"){
+        if(result.serverResponse === "Success"){
           self.setState({"saveInProgress": false});
           console.log("File saved");
         }
@@ -290,7 +290,7 @@ class Manager extends Component {
   render() {
     let totalNrOfFiles = this.state.filesToProcess.length;
     let filteredNrOfFile = 0;
-    this.state.filesToProcess.map((file) => {
+    this.state.filesToProcess.forEach((file) => {
       if(this.shouldFileBeDisplayedInFilesToProcess(file)){
         filteredNrOfFile++;
       }
@@ -330,7 +330,7 @@ class Manager extends Component {
               return this.shouldFileBeDisplayedInFilesToProcess(file) ?
               (
                 <div className="item" key={file.fileName} onClick={(e) => this.setCurrentFile(file)}>
-                  <img src={file.thumbNailImageUrl} />
+                  <img src={file.thumbNailImageUrl} alt="thumbnail" />
                   <span>{file.fileName}</span>
                 </div>
               ):''
@@ -381,7 +381,7 @@ class Manager extends Component {
           <div className="itemBar sequencesBelongingToFile">
             {[...this.state.currentFile.sequences.values()].map((sequence, i) =>
               <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}>
-                <img src={sequence.thumbNailImageUrl} />
+                <img src={sequence.thumbNailImageUrl} alt="thumbnail" />
                 <span>{sequence.inPoint.toFixed(2)} - {sequence.outPoint.toFixed(2)}</span>
               </div>
             )}

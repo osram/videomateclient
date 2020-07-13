@@ -2,16 +2,8 @@ import React, { Component } from 'react';
 import logo from '../yoda.jpg';
 import '../App.css';
 import { VideoFile } from '../model/VideoFile';
-import { Sequence } from '../model/Sequence';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import hotkeys from 'hotkeys-js';
 import elasticlunr from 'elasticlunr';
 import VideoPlayer from './VideoPlayer.js'
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import Fade from '@material-ui/core/Fade';
-
-
 
 import {
   apiFetchFolders,
@@ -46,7 +38,6 @@ class Search extends Component {
 
   constructor(props) {
     super(props);
-    var self = this;
     //this.generateIndex();
     console.log("Loading search index");
     apiFetchSearchIndex().then(result => {
@@ -82,11 +73,8 @@ class Search extends Component {
       this.setState({searchResult:allDocs});
       return
     }
-    let matchedSequences = [];
     let result = this.index.search(searchStr) 
-    result.map(item => {
-      matchedSequences.push(this.index.documentStore.getDoc(item.ref));
-    });
+    let matchedSequences = result.map(item => this.index.documentStore.getDoc(item.ref));
     this.setState({searchResult:matchedSequences});
   }
 
@@ -100,7 +88,7 @@ class Search extends Component {
       let self = this;
       self.index = elasticlunr()
       self.index.addField("tags")
-      let promise = new Promise(function(resolv,reject){
+      new Promise(function(resolv,reject){
         self.loadFoldersToIndex(foldersToProcess, resolv, reject);
       }).then(() => {
         apiSaveSearchIndex(self.index.toJSON());
@@ -111,7 +99,7 @@ class Search extends Component {
   }
 
   loadFoldersToIndex(foldersToProcess, resolv, reject){
-    if(foldersToProcess.length == 0){
+    if(foldersToProcess.length === 0){
       return resolv();
     }
     let folder = foldersToProcess[0];
@@ -119,7 +107,7 @@ class Search extends Component {
     this.setState({processMessage:"processing folder " + folder});
     let self = this;
     apiFetchFiles(folder).then(result => {
-      result.serverResponse.map(file => {
+      result.serverResponse.forEach(file => {
         let vf = new VideoFile(file);
         if(vf.status === "sequences_has_been_processed") {
           console.log("   Loading file to index " + vf.fileName);
@@ -156,7 +144,7 @@ class Search extends Component {
         <p>
           <input type="text" id="search" onChange={(e) => this.doSearch(e.target.value)}/>
           {/* <button>Search</button>  */}
-          <button onClick={(e) => this.generateIndex()}>Regenerate searchindex</button>
+          <button id="generateIndex" onClick={() => this.generateIndex()}>Regenerate searchindex</button>
         </p>
 
         <div className="columns">
@@ -164,8 +152,8 @@ class Search extends Component {
             <h2>Search result</h2>
             <div className="itemBar sequencesBelongingToFile">
               { this.state.searchResult.map((sequence,i) =>
-                <div key={i} className="item" onClick={(e) => this.setCurrentSequence(sequence)}>
-                  <img src={sequence.thumbNailImageUrl} />
+                <div key={i} className="item" onClick={() => this.setCurrentSequence(sequence)}>
+                  <img src={sequence.thumbNailImageUrl} alt="thumbnail" />
                   <span>Length:{Math.ceil(sequence.length)}s</span>
                 </div>
               )}

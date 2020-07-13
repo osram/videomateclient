@@ -8,9 +8,9 @@ function json (response) {
     return response.json();
 }
 
-function error (error) {
-    return { success: false, serverResponse: error };
-}
+// function error (error) {
+//     return { success: false, serverResponse: error };
+// }
 
 export const baseFetch = (objektId, api, parameters = '', felmeddelande = 'Något gick fel när objektet skulle hämtas, försök igen senare.') => {
     return fetch((api + objektId + parameters), {
@@ -168,7 +168,7 @@ export const apiSaveVideoFile = (videoFile) => {
     let copyToSendToServer = Object.assign({}, videoFile);
      //convert map to array to be able to send as json
     copyToSendToServer.sequences = [];
-    [...videoFile.sequences.values()].map(sequence => {
+    [...videoFile.sequences.values()].forEach(sequence => {
         copyToSendToServer.sequences.push(sequence);
     })
     return basePost(copyToSendToServer, serverUrl + '/save');
