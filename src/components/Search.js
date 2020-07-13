@@ -73,7 +73,7 @@ class Search extends Component {
       this.setState({searchResult:allDocs});
       return
     }
-    let result = this.index.search(searchStr) 
+    let result = this.index.search(searchStr, {fields:{tags:{expand:true}}}) 
     let matchedSequences = result.map(item => this.index.documentStore.getDoc(item.ref));
     this.setState({searchResult:matchedSequences});
   }
@@ -93,7 +93,7 @@ class Search extends Component {
       }).then(() => {
         apiSaveSearchIndex(self.index.toJSON());
         self.setState({processMessage:"Index generated"});
-        this.doSearch("categorized");
+        this.doSearch();
       });
     });
   }
@@ -116,7 +116,7 @@ class Search extends Component {
               "id":  sequence.id,
               "status": file.status,
               "folder": file.folder,
-              "tags": sequence.tags,
+              "tags": sequence.tags.map(tag => tag.replace("_"," ")),
               "issues": sequence.issues,
               "thumbNailImageUrl": sequence.thumbNailImageUrl,
               "length": sequence.outPoint - sequence.inPoint
