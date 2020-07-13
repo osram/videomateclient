@@ -301,7 +301,7 @@ class Manager extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">VideoMate</h1>
-          <p>- Helping you cut and organize with a lite magick.</p>
+          <p>- Helping you cut and organize with a little magic.</p>
         </header>
         
         <h2>Files to process 
@@ -353,7 +353,7 @@ class Manager extends Component {
            Status:<select value={this.state.currentFile.status} onChange={this.changeStatus.bind(this)}>
              <option value="not_processed">Not Processed</option>
              <option value="categorized">Categorized</option>
-             <option value="sequences_has_been_processed">Sequences has beed processed</option>
+             <option value="sequences_has_been_processed">Sequences has been processed</option>
            </select><br/>
            <input name="markedAsDeleted" type="checkbox" checked={this.state.currentFile.markedAsDeleted} onChange={this.toogleVideoFileMarkedAsDeleted.bind(this)} />
            Mark file as deleted
@@ -372,12 +372,12 @@ class Manager extends Component {
               <option value="5">5</option>
           </select>
          </span><br/>
-         <span>Taggs:</span> <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
+         <span>Tags:</span> <TagEditor type={"tag"} tags={this.getTagValues("tag", this.state.currentSequence.tags)} suggestions={this.state.suggestions.tag} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
          <span>Technical issues:</span><TagEditor type={"issue"} tags={this.getTagValues("issue", this.state.currentSequence.issues)} suggestions={this.state.suggestions.issue} addTag={this.addSuggestionToCurrentSequence.bind(this)} removeTag={this.removeSuggestionFromCurrentSequence}></TagEditor>
         </div>
         
         <div className="sequencesContainer">
-          <h2>Sequences beloning to {this.state.currentFile.fileName}</h2>  
+          <h2>Sequences belonging to {this.state.currentFile.fileName}</h2>  
           <div className="itemBar sequencesBelongingToFile">
             {[...this.state.currentFile.sequences.values()].map((sequence, i) =>
               <div className="item" key={i} onClick={(e) => this.setCurrentSequence(sequence)}>
