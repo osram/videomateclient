@@ -29,7 +29,7 @@ const videoJsOptions = {
 };
 
 class Search extends Component {
- 
+
   index = elasticlunr(function () {
     this.addField('tags');
     this.addField('issues');
@@ -39,9 +39,9 @@ class Search extends Component {
   });
 
   state = {
-      availableFolders:[],
-      processMessage:"",
-      searchResult:[]
+    availableFolders:[],
+    processMessage:"",
+    searchResult:[]
   }
 
   constructor(props) {
@@ -50,13 +50,18 @@ class Search extends Component {
     //this.generateIndex();
     console.log("Loading search index");
     apiFetchSearchIndex().then(result => {
-      this.index = elasticlunr.Index.load(result.serverResponse);
+      try {
+        this.index = elasticlunr.Index.load(result.serverResponse);
+      } catch (error) {
+        console.log(error)
+        return
+      }
       console.log("Search index loaded");
-      this.doSearch("categorized");
+      this.doSearch();
     });
 
-   
-    
+
+
     /*apiFetchSuggestions("tag").then(result => {
       var copy = this.state.suggestions;
       copy["tag"] = result.serverResponse;
@@ -71,12 +76,18 @@ class Search extends Component {
   }
 
   doSearch(searchStr){
-      let matchedSequences = [];
-      let result = this.index.search(searchStr + '*');
-      result.map(item => {
-          matchedSequences.push(this.index.documentStore.getDoc(item.ref));
-      });
-      this.setState({searchResult:matchedSequences});
+    if (!searchStr){
+      let allDocs = this.index.documentStore.docs
+      allDocs = Object.values(allDocs)
+      this.setState({searchResult:allDocs});
+      return
+    }
+    let matchedSequences = [];
+    let result = this.index.search(searchStr) 
+    result.map(item => {
+      matchedSequences.push(this.index.documentStore.getDoc(item.ref));
+    });
+    this.setState({searchResult:matchedSequences});
   }
 
   generateIndex(){
@@ -84,9 +95,11 @@ class Search extends Component {
     apiFetchFolders().then(result => {
       this.setState({"availableFolders": result.serverResponse});
       this.forceUpdate();
-    
+
       let foldersToProcess = this.state.availableFolders.slice(0);
       let self = this;
+      self.index = elasticlunr()
+      self.index.addField("tags")
       let promise = new Promise(function(resolv,reject){
         self.loadFoldersToIndex(foldersToProcess, resolv, reject);
       }).then(() => {
@@ -99,71 +112,72 @@ class Search extends Component {
 
   loadFoldersToIndex(foldersToProcess, resolv, reject){
     if(foldersToProcess.length == 0){
-        return resolv();
+      return resolv();
     }
     let folder = foldersToProcess[0];
     console.log("Loading folder " + folder + " to index");
     this.setState({processMessage:"processing folder " + folder});
     let self = this;
     apiFetchFiles(folder).then(result => {
-        result.serverResponse.map(file => {
-            let vf = new VideoFile(file);
-
-            if(vf.status == "categorized"){
-              console.log("   Loading file to index " + vf.fileName);
-                vf.sequences.forEach(sequence => {
-                    let doc = {
-                        "id":  sequence.id,
-                        "status": file.status,
-                        "folder": file.folder,
-                        "tags": sequence.tags,
-                        "issues": sequence.issues,
-                        "thumbNailImageUrl": sequence.thumbNailImageUrl,
-                        "length": sequence.outPoint - sequence.inPoint
-                    }
-                    self.index.addDoc(doc);
-                    console.log(self.index.documentStore.length);
-                })
+      result.serverResponse.map(file => {
+        let vf = new VideoFile(file);
+        if(vf.status === "sequences_has_been_processed") {
+          console.log("   Loading file to index " + vf.fileName);
+          vf.sequences.forEach(sequence => {
+            let doc = {
+              "id":  sequence.id,
+              "status": file.status,
+              "folder": file.folder,
+              "tags": sequence.tags,
+              "issues": sequence.issues,
+              "thumbNailImageUrl": sequence.thumbNailImageUrl,
+              "length": sequence.outPoint - sequence.inPoint
             }
-        });
-        return this.loadFoldersToIndex(foldersToProcess.slice(1), resolv, reject);
+            self.index.addDoc(doc);
+            console.log(self.index.documentStore.length);
+          })
+        }
+      });
+      return this.loadFoldersToIndex(foldersToProcess.slice(1), resolv, reject);
     });
   }
 
   render() {
     return (
-        <div className="Search">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">VideoMate</h1>
-            <p>- Helping you cut and organize with a lite magick.</p>
-          </header>
+      <div className="Search">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">VideoMate</h1>
+          <p>- Helping you cut and organize with a little magic.</p>
+        </header>
 
-              <h1>Search</h1>
-              <span>{this.state.processMessage}</span>
-              <p>
-                  <input type="text" id="search" onChange={(e) => this.doSearch(e.target.value)}/><button>Search</button> <button onClick={(e) => this.generateIndex()}>Regenerate searchindex</button>
-              </p>
-            
-            <div class="columns">
-              <div className="sequencesContainer">
-                <h2>Search result</h2>
-                  <div className="itemBar sequencesBelongingToFile">
-                        { this.state.searchResult.map(sequence =>  
-                          <div className="item" onClick={(e) => this.setCurrentSequence(sequence)}>
-                            <img src={sequence.thumbNailImageUrl} />
-                            <span>Length:{Math.ceil(sequence.length)}s</span>
-                          </div>
-                        )}
-                  </div>
-              </div>
-              <div className="sequenceViewer">
-                <VideoPlayer {...videoJsOptions} ref={(child) => { this.videoPlayer = child; }}/>
-              </div>
+        <h1>Search</h1>
+        <span>{this.state.processMessage}</span>
+        <p>
+          <input type="text" id="search" onChange={(e) => this.doSearch(e.target.value)}/>
+          {/* <button>Search</button>  */}
+          <button onClick={(e) => this.generateIndex()}>Regenerate searchindex</button>
+        </p>
+
+        <div className="columns">
+          <div className="sequencesContainer">
+            <h2>Search result</h2>
+            <div className="itemBar sequencesBelongingToFile">
+              { this.state.searchResult.map((sequence,i) =>
+                <div key={i} className="item" onClick={(e) => this.setCurrentSequence(sequence)}>
+                  <img src={sequence.thumbNailImageUrl} />
+                  <span>Length:{Math.ceil(sequence.length)}s</span>
+                </div>
+              )}
             </div>
+          </div>
+          <div className="sequenceViewer">
+            <VideoPlayer {...videoJsOptions} ref={(child) => { this.videoPlayer = child; }}/>
+          </div>
         </div>
-      
-       
+      </div>
+
+
     );
   }
 }
